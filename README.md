@@ -2,7 +2,7 @@
 
 Progetto per il corso di **Intelligenza Artificiale** — Università degli Studi di Perugia, Dipartimento di Matematica e Informatica, A.A. 2024-2025.
 
-**Autore:** Rossi Riccardo (357175)
+**Autore:** Dott. Rossi Riccardo
 
 Treasure Maze è una variante del labirinto classico in cui l'agente deve raccogliere dei tesori. Il labirinto viene fornito come **immagine**: un modello di rete neurale convoluzionale (CNN) classifica ogni cella dell'immagine (partenza, tesoro, muro, costo), ricostruisce la griglia e la risolve con algoritmi di ricerca A* e UCS (Uniform Cost Search), tenendo conto dei costi di attraversamento e della possibilità di abbattere i muri.
 
