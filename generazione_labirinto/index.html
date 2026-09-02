@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Labirinto N×N</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+      background: #f0f0f0;
+    }
+    .controls {
+      margin-bottom: 20px;
+    }
+    select, button {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+    }
+    table {
+      margin: 0 auto;
+      border-collapse: collapse;
+    }
+    td {
+      width: 28px;
+      height: 28px;
+      border: 1px solid #000;
+      text-align: center;
+      vertical-align: middle;
+      font-weight: bold;
+      background: #fff;
+    }
+    /* Nota: questi colori sono solo per la visualizzazione a schermo.
+       Il PNG scaricato resta sempre testo nero su sfondo bianco, identico
+       al formato usato per le immagini di training del classificatore. */
+    .cell-S { background: #bbf7d0; color: black; }
+    .cell-T { background: #fef08a; color: black; }
+    .cell-X { background: #fecaca; color: black; }
+    .cell-1, .cell-2, .cell-3, .cell-4 {
+      background: #fff; color: black;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎯 Generatore di Labirinto N×N</h1>
+
+  <div class="controls">
+    <label for="tableSize">Dimensione:</label>
+    <select id="tableSize">
+      <option value="4">4×4</option>
+      <option value="5" selected>5×5</option>
+      <option value="6">6×6</option>
+      <option value="7">7×7</option>
+      <option value="8">8×8</option>
+    </select>
+    <button onclick="generateTable()">Genera</button>
+    <button onclick="downloadTableAsImage()">📥 Scarica PNG</button>
+  </div>
+
+  <div id="tableContainer"></div>
+
+  <script>
+    function generateTable() {
+      const size = parseInt(document.getElementById('tableSize').value);
+      const totalCells = size * size;
+
+      const values = ['S'];
+
+      const numT = Math.floor(Math.random() * (size - 1)) + 1;
+      for (let i = 0; i < numT; i++) {
+        values.push('T');
+      }
+
+      const symbols = ['1', '2', '3', '4', 'X'];
+      for (let i = values.length; i < totalCells; i++) {
+        values.push(symbols[Math.floor(Math.random() * symbols.length)]);
+      }
+
+      for (let i = values.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [values[i], values[j]] = [values[j], values[i]];
+      }
+
+      let html = '<table id="mazeTable">';
+      let index = 0;
+      for (let i = 0; i < size; i++) {
+        html += '<tr>';
+        for (let j = 0; j < size; j++) {
+          const val = values[index++];
+          html += `<td class="cell-${val}">${val}</td>`;
+        }
+        html += '</tr>';
+      }
+      html += '</table>';
+
+      document.getElementById('tableContainer').innerHTML = html;
+    }
+
+    function downloadTableAsImage() {
+      const table = document.getElementById("mazeTable");
+      if (!table) return alert("Genera prima il labirinto!");
+
+      const size = parseInt(document.getElementById('tableSize').value);
+      const cellSize = 28;
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      canvas.width = size * cellSize;
+      canvas.height = size * cellSize;
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const cells = table.querySelectorAll('td');
+      cells.forEach((cell, index) => {
+        const row = Math.floor(index / size);
+        const col = index % size;
+        const x = col * cellSize;
+        const y = row * cellSize;
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x, y, cellSize, cellSize);
+
+        ctx.strokeStyle = '#000000';
+        ctx.strokeRect(x, y, cellSize, cellSize);
+
+        ctx.fillStyle = '#000000';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(cell.textContent, x + cellSize/2, y + cellSize/2);
+      });
+
+      canvas.toBlob(function(blob) {
+        const link = document.createElement('a');
+        link.download = `labirinto_${size}x${size}.png`;
+        link.href = URL.createObjectURL(blob);
+        link.click();
+        URL.revokeObjectURL(link.href);
+      });
+    }
+
+    // Avvio automatico
+    window.onload = () => {
+      const randSize = Math.floor(Math.random() * 5) + 4;
+      document.getElementById("tableSize").value = randSize;
+      generateTable();
+    };
+  </script>
+
+</body>
+</html>
