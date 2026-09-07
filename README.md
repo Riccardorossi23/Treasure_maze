@@ -62,5 +62,4 @@ Treasure_Maze/
 ## 👨‍💻 Autore
 
 **Rossi Riccardo**
-[GitHub](https://github.com/Riccardorossi23)
 
